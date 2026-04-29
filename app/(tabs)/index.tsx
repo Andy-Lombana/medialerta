@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
 export default function SplashScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
+  const router = useRouter();
 
   useEffect(() => {
     Animated.parallel([
@@ -20,6 +22,12 @@ export default function SplashScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+
+    const timer = setTimeout(() => {
+      router.replace("/auth");
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
   return (
     <View style={styles.container}>
@@ -32,8 +40,8 @@ export default function SplashScreen() {
           },
         ]}
       >
-        <Ionicons name="medical" size={100} color="white" />
-        <Text>MediAlerta</Text>
+        <Ionicons name="medical-sharp" size={100} color="white" />
+        <Text style={styles.appName}>MediAlerta</Text>
       </Animated.View>
     </View>
   );
@@ -47,10 +55,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconContainer: {
+    alignItems: "center",
+  },
+  appName: {
     color: "white",
     fontSize: 32,
     fontWeight: "bold",
-    marginTop: 20,
+    marginTop: 10,
     letterSpacing: 1,
+    textAlign: "center",
   },
 });
