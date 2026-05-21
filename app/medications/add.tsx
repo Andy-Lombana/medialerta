@@ -81,7 +81,7 @@ export default function AddMedicationScreen() {
           currentSupply: med.currentSupply?.toString() || "",
           refillAt: med.refillAt?.toString() || "",
           frequency: med.dosage,
-          notes: med.name,         
+          notes: med.notes,         
         });
 
         const presetDuration = DURATIONS.find(d => d.label === med.duration);
@@ -350,10 +350,6 @@ const onTimeChange = (event: any, newValue?: Date) => {
             <View style={styles.timesContainer}>
               <View style={styles.timesHeaderRow}>
                 <Text style={styles.timesTitle}>Medication Times</Text>
-                <TouchableOpacity style={styles.addTimeButton} onPress={addTimeField}>
-                  <Ionicons name="add-circle-outline" size={20} color="#1a8e2d" />
-                  <Text style={styles.addTimeButtonText}>Add Time</Text>
-                </TouchableOpacity>
               </View>
               
               {errors.times && <Text style={styles.errorText}>{errors.times}</Text>}
