@@ -152,22 +152,21 @@ export default function HomeScreen() {
 
       // Filter medications for today
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       const todayMeds = allMedications.filter((med) => {
         const startDate = new Date(med.startDate);
-        const durationDays = parseInt(med.duration.split(" ")[0]);
+        startDate.setHours(0, 0, 0, 0);
 
-        // For ongoing medications or if within duration
-        if (
-          durationDays === -1 ||
-          (today >= startDate &&
-            today <=
-              new Date(
-                startDate.getTime() + durationDays * 24 * 60 * 60 * 1000
-              ))
-        ) {
-          return true;
-        }
-        return false;
+        if (today < startDate) return false;
+        if (med.duration === "Ongoing") return true;
+
+        const durationDays = parseInt(med.duration.split(" ")[0]);
+        if (isNaN(durationDays)) return false;
+
+        const endDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+        // Incluimos el medicamento si hoy es antes de la fecha de finalización
+        return today < endDate;
       });
 
       setTodaysMedications(todayMeds);
@@ -273,9 +272,11 @@ export default function HomeScreen() {
     );
   };
 
+  const totalDosesToday = todaysMedications.reduce((acc, med) => acc + med.times.length, 0);
+
   const progress =
-    todaysMedications.length > 0
-      ? completedDoses / (todaysMedications.length * 2)
+    totalDosesToday > 0
+      ? completedDoses / totalDosesToday
       : 0;
 
   return (
@@ -302,7 +303,7 @@ export default function HomeScreen() {
           </View>
           <CircularProgress
             progress={progress}
-            totalDoses={todaysMedications.length * 2}
+            totalDoses={totalDosesToday}
             completedDoses={completedDoses}
           />
         </View>
