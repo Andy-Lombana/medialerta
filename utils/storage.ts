@@ -65,6 +65,21 @@ export async function updateMedication(
   }
 }
 
+export async function deleteMedication(id: string): Promise<void> {
+  try {
+    const medications = await getMedications();
+    const updatedMedications = medications.filter((med) => med.id !== id);
+    await AsyncStorage.setItem(MEDICATIONS_KEY, JSON.stringify(updatedMedications));
+
+    const history = await getDoseHistory();
+    const updatedHistory = history.filter((dose) => dose.medicationId !== id);
+    await AsyncStorage.setItem(DOSE_HISTORY_KEY, JSON.stringify(updatedHistory));
+  } catch (error) {
+    console.error("Error deleting medication:", error);
+    throw error;
+  }
+}
+
 export async function getDoseHistory(): Promise<DoseHistory[]> {
   try {
     const data = await AsyncStorage.getItem(DOSE_HISTORY_KEY);

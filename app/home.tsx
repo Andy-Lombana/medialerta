@@ -21,11 +21,13 @@ import {
   getTodaysDoses,
   recordDose,
   DoseHistory,
+  deleteMedication,
 } from "../utils/storage";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   registerForPushNotificationsAsync,
   scheduleMedicationReminder,
+  cancelMedicationReminders,
 } from "../utils/notifications";
 
 const { width } = Dimensions.get("window");
@@ -237,6 +239,34 @@ export default function HomeScreen() {
     }
   };
 
+  const handleDeleteMedication = async (medicationId: string) => {
+    Alert.alert(
+      "Delete Medication",
+      "Are you sure you want to delete this medication and all its reminders?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteMedication(medicationId);
+              await cancelMedicationReminders(medicationId);
+              loadMedications();
+            } catch (error) {
+              console.error("Delete error:", error);
+              Alert.alert("Error", "Could not delete medication");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEditMedication = (medication: Medication) => {
+    router.push({ pathname: "/medications/add", params: { id: medication.id } });
+  };
+
   const isDoseTaken = (medicationId: string) => {
     return doseHistory.some(
       (dose) => dose.medicationId === medicationId && dose.taken
@@ -352,6 +382,7 @@ export default function HomeScreen() {
                       <Text style={styles.timeText}>{medication.times[0]}</Text>
                     </View>
                   </View>
+                  <View style={styles.rightActions}>
                   {taken ? (
                     <View style={[styles.takenBadge]}>
                       <Ionicons
@@ -372,6 +403,15 @@ export default function HomeScreen() {
                       <Text style={styles.takeDoseText}>Take</Text>
                     </TouchableOpacity>
                   )}
+                    <View style={styles.managementButtons}>
+                      <TouchableOpacity onPress={() => handleEditMedication(medication)} style={styles.iconButton}>
+                        <Ionicons name="pencil-outline" size={18} color="#1a8e2d" />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => handleDeleteMedication(medication.id)} style={styles.iconButton}>
+                        <Ionicons name="trash-outline" size={18} color="#FF5252" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               );
             })
@@ -412,6 +452,16 @@ export default function HomeScreen() {
                     {medication.times[0]}
                   </Text>
                 </View>
+                <View style={styles.rightActions}>
+                  <View style={styles.managementButtons}>
+                    <TouchableOpacity onPress={() => handleEditMedication(medication)} style={styles.iconButton}>
+                      <Ionicons name="pencil-outline" size={18} color="#1a8e2d" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteMedication(medication.id)} style={styles.iconButton}>
+                      <Ionicons name="trash-outline" size={18} color="#FF5252" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             ))}
           </View>
@@ -451,6 +501,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 20,
+    paddingBottom: 100,
   },
   quickActionsContainer: {
     paddingHorizontal: 20,
@@ -720,5 +771,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
     marginLeft: 4,
+  },
+  rightActions: {
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 90,
+  },
+  managementButtons: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  iconButton: {
+    padding: 4,
   },
 }); 

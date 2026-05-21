@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,19 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
-import { addMedication } from "../../utils/storage";
+import { 
+  addMedication, 
+  getMedications, 
+  updateMedication 
+} from "../../utils/storage";
 import {
   scheduleMedicationReminder,
   scheduleRefillReminder,
+  updateMedicationReminders,
 } from "../../utils/notifications";
 
 const { width } = Dimensions.get("window");
@@ -34,6 +39,9 @@ const DURATIONS = [
 
 export default function AddMedicationScreen() {
   const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const isEditing = !!id;
+
   const [form, setForm] = useState({
     name: "",
     dosage: "",
@@ -54,6 +62,35 @@ export default function AddMedicationScreen() {
   const [activeTimeIndex, setActiveTimeIndex] = useState<number>(0);
   const [selectedDuration, setSelectedDuration] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      loadMedicationData();
+    }
+  }, [id]);
+
+  const loadMedicationData = async () => {
+    try {
+      const medications = await getMedications();
+      const med = medications.find((m) => m.id === id);
+      
+      if (med) {
+        setForm({
+          ...med,
+          startDate: new Date(med.startDate),
+          currentSupply: med.currentSupply?.toString() || "",
+          refillAt: med.refillAt?.toString() || "",
+          frequency: med.dosage,
+          notes: med.name,         
+        });
+
+        const presetDuration = DURATIONS.find(d => d.label === med.duration);
+        setSelectedDuration(presetDuration ? presetDuration.label : "Custom");
+      }
+    } catch (error) {
+      console.error("Error loading medication for edit:", error);
+    }
+  };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -91,7 +128,7 @@ export default function AddMedicationScreen() {
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
       const medicationData = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: isEditing ? (id as string) : Math.random().toString(36).substr(2, 9),
         ...form,
         currentSupply: form.currentSupply ? Number(form.currentSupply) : 0,
         totalSupply: form.currentSupply ? Number(form.currentSupply) : 0,
@@ -100,16 +137,20 @@ export default function AddMedicationScreen() {
         color: randomColor,
       };
 
-      await addMedication(medicationData);
-
-      if (medicationData.reminderEnabled) {
-        await scheduleMedicationReminder(medicationData);
+      if (isEditing) {
+        await updateMedication(medicationData);
+        await updateMedicationReminders(medicationData);
+      } else {
+        await addMedication(medicationData);
+        if (medicationData.reminderEnabled) {
+          await scheduleMedicationReminder(medicationData);
+        }
+        if (medicationData.refillReminder) {
+          await scheduleRefillReminder(medicationData);
+        }
       }
-      if (medicationData.refillReminder) {
-        await scheduleRefillReminder(medicationData);
-      }
 
-      Alert.alert("Success", "Medication added successfully", [
+      Alert.alert("Success", `Medication ${isEditing ? "updated" : "added"} successfully`, [
         { text: "OK", onPress: () => router.back() },
       ], { cancelable: false });
     } catch (error) {
@@ -181,7 +222,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>New Medication</Text>
+          <Text style={styles.headerTitle}>{isEditing ? "Edit Medication" : "New Medication"}</Text>
         </View>
 
         <ScrollView
@@ -477,7 +518,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
               end={{ x: 1, y: 0 }}
             >
               <Text style={styles.saveButtonText}>
-                {isSubmitting ? "Adding..." : "Add Medication"}
+                {isSubmitting ? "Saving..." : isEditing ? "Update Medication" : "Add Medication"}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
