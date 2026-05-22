@@ -35,7 +35,7 @@ export default function AuthScreen() {
       setIsAuthenticating(true);
       setError(null);
 
-      // Check if device has biometric hardware
+      // Comprueba si el dispositivo tiene hardware biométrico.
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const supportedTypes =
         await LocalAuthentication.supportedAuthenticationTypesAsync();
@@ -44,20 +44,20 @@ export default function AuthScreen() {
       const auth = await LocalAuthentication.authenticateAsync({
         promptMessage:
           hasHardware && hasBiometrics
-            ? "Use Face ID or Touch ID"
-            : "Enter your PIN to access MedRemind",
+            ? "Utilice Face ID o Touch ID."
+            : "Introduce tu PIN para acceder a MediAlerta.",
         fallbackLabel: "Use PIN",
-        cancelLabel: "Cancel",
+        cancelLabel: "Cancelar",
         disableDeviceFallback: false,
       });
 
       if (auth.success) {
         router.replace("/home");
       } else {
-        setError("Authentication failed. Please try again.");
+        setError("Falló la autenticación. Inténtalo de nuevo.");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError("Se ha producido un error. Por favor, inténtelo de nuevo.");
       console.error(err);
     } finally {
       setIsAuthenticating(false);
@@ -65,21 +65,21 @@ export default function AuthScreen() {
   };
 
   return (
-    <LinearGradient colors={["#4CAF50", "#2E7D32"]} style={styles.container}>
+    <LinearGradient colors={["#1A778E", "#145269"]} style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <Ionicons name="medical" size={80} color="white" />
+          <Ionicons name="medkit" size={80} color="white" />
         </View>
 
-        <Text style={styles.title}>MedRemind</Text>
-        <Text style={styles.subtitle}>Your Personal Medication Assistant</Text>
+        <Text style={styles.title}>MediAlerta</Text>
+        <Text style={styles.subtitle}>Gestion de medicamentos y citas</Text>
 
         <View style={styles.card}>
-          <Text style={styles.welcomeText}>Welcome Back!</Text>
+          <Text style={styles.welcomeText}>Bienvenido!</Text>
           <Text style={styles.instructionText}>
             {hasBiometrics
-              ? "Use Face ID/Touch ID or PIN to access your medications"
-              : "Enter your PIN to access your medications"}
+              ? "Utilice Face ID/Touch ID o PIN para acceder"
+              : "Introduce tu PIN para acceder"}
           </Text>
 
           <TouchableOpacity
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#145269",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 12,

@@ -71,6 +71,13 @@ const QUICK_ACTIONS = [
     color: "#4527A0",
     gradient: ["#453FD4", "#2E2A8C"] as [string, string],
   },
+  {
+    icon: "clipboard-outline" as const,
+    label: "Historia\nMédica",
+    route: "/medical_history" as const,
+    color: "#00796B",
+    gradient: ["#009688", "#004D40"] as [string, string],
+  },
 ];
 
 interface CircularProgressProps {

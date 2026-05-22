@@ -60,6 +60,9 @@ export async function scheduleMedicationReminder(
   if (!medication.reminderEnabled) return;
 
   try {
+    // Limpiar notificaciones programadas existentes para este medicamento antes de programar nuevas.
+    await cancelMedicationReminders(medication.id);
+
     let lastIdentifier: string | undefined;
 
     for (const time of medication.times) {
