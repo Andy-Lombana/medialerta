@@ -28,7 +28,7 @@ export default function RefillTrackerScreen() {
       const allMedications = await getMedications();
       setMedications(allMedications);
     } catch (error) {
-      console.error("Error loading medications:", error);
+      console.error("Error al cargar los medicamentos:", error);
     }
   }, []);
 
@@ -50,12 +50,12 @@ export default function RefillTrackerScreen() {
       await loadMedications();
 
       Alert.alert(
-        "Refill Recorded",
-        `${medication.name} has been refilled to ${medication.totalSupply} units.`
+        "Recarga registrada",
+        `${medication.name} ha sido rellenado ${medication.totalSupply} unidades.`
       );
     } catch (error) {
-      console.error("Error recording refill:", error);
-      Alert.alert("Error", "Failed to record refill. Please try again.");
+      console.error("Error al registrar la recarga:", error);
+      Alert.alert("Error", "No se pudo registrar la recarga. Inténtelo de nuevo.");
     }
   };
 
@@ -64,20 +64,20 @@ export default function RefillTrackerScreen() {
       (medication.currentSupply / medication.totalSupply) * 100;
     if (percentage <= medication.refillAt) {
       return {
-        status: "Low",
-        color: "#F44336",
-        backgroundColor: "#FFEBEE",
+        status: "Bajo",
+        color: "#1A778E",
+        backgroundColor: "#DE3737",
       };
     } else if (percentage <= 50) {
       return {
-        status: "Medium",
-        color: "#FF9800",
-        backgroundColor: "#FFF3E0",
+        status: "Medio",
+        color: "#1A778E",
+        backgroundColor: "#CFCF51",
       };
     } else {
       return {
-        status: "Good",
-        color: "#4CAF50",
+        status: "Alto",
+        color: "#1A778E",
         backgroundColor: "#E8F5E9",
       };
     }
@@ -86,7 +86,7 @@ export default function RefillTrackerScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#1A778E", "#145269"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -98,9 +98,9 @@ export default function RefillTrackerScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#145269" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Refill Tracker</Text>
+          <Text style={styles.headerTitle}>Inventario</Text>
         </View>
 
         <ScrollView
@@ -110,12 +110,12 @@ export default function RefillTrackerScreen() {
           {medications.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="medical-outline" size={48} color="#ccc" />
-              <Text style={styles.emptyStateText}>No medications to track</Text>
+              <Text style={styles.emptyStateText}>No hay medicamentos</Text>
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => router.push("/medications/add")}
               >
-                <Text style={styles.addButtonText}>Add Medication</Text>
+                <Text style={styles.addButtonText}>Agregar Medicamento</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -160,9 +160,9 @@ export default function RefillTrackerScreen() {
 
                   <View style={styles.supplyContainer}>
                     <View style={styles.supplyInfo}>
-                      <Text style={styles.supplyLabel}>Current Supply</Text>
+                      <Text style={styles.supplyLabel}>Suministro actual</Text>
                       <Text style={styles.supplyValue}>
-                        {medication.currentSupply} units
+                        {medication.currentSupply} Unidades
                       </Text>
                     </View>
                     <View style={styles.progressBarContainer}>
@@ -183,11 +183,11 @@ export default function RefillTrackerScreen() {
                     </View>
                     <View style={styles.refillInfo}>
                       <Text style={styles.refillLabel}>
-                        Refill at: {medication.refillAt}%
+                        Rellenar en: {medication.refillAt}%
                       </Text>
                       {medication.lastRefillDate && (
                         <Text style={styles.lastRefillDate}>
-                          Last refill:{" "}
+                          Último recarga:{" "}
                           {new Date(
                             medication.lastRefillDate
                           ).toLocaleDateString()}
@@ -207,7 +207,7 @@ export default function RefillTrackerScreen() {
                     onPress={() => handleRefill(medication)}
                     disabled={supplyPercentage >= 100}
                   >
-                    <Text style={styles.refillButtonText}>Record Refill</Text>
+                    <Text style={styles.refillButtonText}>Renovación de inventario</Text>
                   </TouchableOpacity>
                 </View>
               );

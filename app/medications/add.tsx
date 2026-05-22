@@ -30,11 +30,11 @@ import {
 const { width } = Dimensions.get("window");
 
 const DURATIONS = [
-  { id: "1", label: "7 days", value: 7 },
-  { id: "2", label: "14 days", value: 14 },
-  { id: "3", label: "30 days", value: 30 },
-  { id: "4", label: "90 days", value: 90 },
-  { id: "5", label: "Ongoing", value: -1 },
+  { id: "1", label: "7 días ", value: 7 },
+  { id: "2", label: "14 días ", value: 14 },
+  { id: "3", label: "30 días ", value: 30 },
+  { id: "4", label: "90 días ", value: 90 },
+  { id: "5", label: "En curso", value: -1 },
 ];
 
 export default function AddMedicationScreen() {
@@ -45,10 +45,10 @@ export default function AddMedicationScreen() {
   const [form, setForm] = useState({
     name: "",
     dosage: "",
-    frequency: "Custom", // Se asigna un valor por defecto ya que eliminamos el selector
+    frequency: "Custom",
     duration: "",
     startDate: new Date(),
-    times: ["09:00"], // Inicializa con una hora por defecto para que sea visible de inmediato
+    times: ["09:00"],
     notes: "",
     reminderEnabled: true,
     refillReminder: false,
@@ -88,25 +88,25 @@ export default function AddMedicationScreen() {
         setSelectedDuration(presetDuration ? presetDuration.label : "Custom");
       }
     } catch (error) {
-      console.error("Error loading medication for edit:", error);
+      console.error("Error al cargar el medicamento a editar:", error);
     }
   };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!form.name.trim()) newErrors.name = "Medication name is required";
-    if (!form.dosage.trim()) newErrors.dosage = "Dosage is required";
-    if (!form.duration) newErrors.duration = "Duration is required";
+    if (!form.name.trim()) newErrors.name = "Se requiere el nombre del medicamento.";
+    if (!form.dosage.trim()) newErrors.dosage = "Se requiere dosificación";
+    if (!form.duration) newErrors.duration = "Se requiere duración";
     if (form.times.length === 0) {
-      newErrors.times = "At least one medication time is required";
+      newErrors.times = "Se requiere un horario de medicación.";
     }
 
     if (form.refillReminder) {
-      if (!form.currentSupply) newErrors.currentSupply = "Current supply is required";
-      if (!form.refillAt) newErrors.refillAt = "Refill alert threshold is required";
+      if (!form.currentSupply) newErrors.currentSupply = "Se requiere suministro";
+      if (!form.refillAt) newErrors.refillAt = "Se requiere un numero de alerta de recarga";
       if (Number(form.refillAt) >= Number(form.currentSupply)) {
-        newErrors.refillAt = "Refill alert must be less than current supply";
+        newErrors.refillAt = "La alerta de recarga debe ser inferior al suministro actual.";
       }
     }
 
@@ -117,7 +117,7 @@ export default function AddMedicationScreen() {
   const handleSave = async () => {
     try {
       if (!validateForm()) {
-        Alert.alert("Error", "Please fill in all required fields correctly");
+        Alert.alert("Error", "Por favor, rellene correctamente todos los campos obligatorios.");
         return;
       }
 
@@ -150,18 +150,18 @@ export default function AddMedicationScreen() {
         }
       }
 
-      Alert.alert("Success", `Medication ${isEditing ? "updated" : "added"} successfully`, [
+      Alert.alert("Hecho", `Medication ${isEditing ? "updated" : "added"} successfully`, [
         { text: "OK", onPress: () => router.back() },
       ], { cancelable: false });
     } catch (error) {
-      console.error("Save error:", error);
-      Alert.alert("Error", "Failed to save medication.", [{ text: "OK" }]);
+      console.error("Error de guardado:", error);
+      Alert.alert("Error", "Fallo al guardar la información.", [{ text: "OK" }]);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // --- MANEJADORES DE FECHA Y HORA ---
+  // Manejadores de fecha y hora
 
 const onDateChange = (event: any, newValue?: Date) => {
   setShowDatePicker(false);
@@ -186,17 +186,17 @@ const onTimeChange = (event: any, newValue?: Date) => {
   }
 };
 
-  // Funciones dinámicas para añadir o quitar horas manualmente
+  // Funciones dinamicas para añadir o quitar horas manualmente
   const addTimeField = () => {
     setForm((prev) => ({
       ...prev,
-      times: [...prev.times, "12:00"], // Añade una hora estándar por defecto
+      times: [...prev.times, "12:00"], // Añade una hora estandar por defecto
     }));
   };
 
   const removeTimeField = (indexToRemove: number) => {
     if (form.times.length === 1) {
-      Alert.alert("Info", "You must have at least one reminder time.");
+      Alert.alert("Info", "Debes tener al menos un recordatorio.");
       return;
     }
     setForm((prev) => ({
@@ -211,7 +211,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
       style={styles.container}
     >
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#1A778E", "#145269"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -220,9 +220,9 @@ const onTimeChange = (event: any, newValue?: Date) => {
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#145269" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{isEditing ? "Edit Medication" : "New Medication"}</Text>
+          <Text style={styles.headerTitle}>{isEditing ? "Editar Medicación" : "Nueva Medicación"}</Text>
         </View>
 
         <ScrollView
@@ -235,7 +235,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={[styles.mainInput, errors.name && styles.inputError]}
-                placeholder="Medication Name"
+                placeholder="Nombre del medicamento"
                 placeholderTextColor="#999"
                 value={form.name}
                 onChangeText={(text) => {
@@ -249,7 +249,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={[styles.mainInput, errors.dosage && styles.inputError]}
-                placeholder="Dosage (e.g., 500mg)"
+                placeholder="Dosis (ejemplo, 500mg)"
                 placeholderTextColor="#999"
                 value={form.dosage}
                 onChangeText={(text) => {
@@ -261,9 +261,9 @@ const onTimeChange = (event: any, newValue?: Date) => {
             </View>
           </View>
 
-          {/* Duración ("For how long?") */}
+          {/* Duración */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>For how long?</Text>
+            <Text style={styles.sectionTitle}>¿Por cuánto tiempo?</Text>
             {errors.duration && <Text style={styles.errorText}>{errors.duration}</Text>}
             <View style={styles.optionsGrid}>
               {DURATIONS.map((dur) => (
@@ -300,11 +300,11 @@ const onTimeChange = (event: any, newValue?: Date) => {
                 <Ionicons 
                   name="create-outline" 
                   size={24} 
-                  color={selectedDuration === "Custom" ? "white" : "#1a8e2d"} 
+                  color={selectedDuration === "Custom" ? "white" : "#145269"} 
                   style={{ marginBottom: 5 }}
                 />
                 <Text style={[styles.optionLabel, selectedDuration === "Custom" && styles.selectedOptionLabel]}>
-                  Custom Days
+                  Ingresar Días 
                 </Text>
               </TouchableOpacity>
             </View>
@@ -313,7 +313,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
               <View style={[styles.inputContainer, { marginTop: 10 }]}>
                 <TextInput
                   style={styles.mainInput}
-                  placeholder="Enter number of days"
+                  placeholder="Ingrese el numero de días"
                   placeholderTextColor="#999"
                   keyboardType="numeric"
                   value={form.duration.replace(" days", "")}
@@ -326,15 +326,15 @@ const onTimeChange = (event: any, newValue?: Date) => {
               </View>
             )}
 
-            {/* Selector de Fecha de Inicio */}
+            {/* Selector de fecha de inicio */}
             <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
               <View style={styles.dateIconContainer}>
-                <Ionicons name="calendar" size={20} color="#1a8e2d" />
+                <Ionicons name="calendar" size={20} color="#145269" />
               </View>
               <Text style={styles.dateButtonText}>
-                Starts {form.startDate.toLocaleDateString()}
+                Inicio {form.startDate.toLocaleDateString()}
               </Text>
-              <Ionicons name="chevron-forward" size={20} color="#666" />
+              <Ionicons name="chevron-forward" size={20} color="#145269" />
             </TouchableOpacity>
 
             {showDatePicker && (
@@ -349,7 +349,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
             {/* Listado de Horas (Aparece por defecto sin depender de frecuencias) */}
             <View style={styles.timesContainer}>
               <View style={styles.timesHeaderRow}>
-                <Text style={styles.timesTitle}>Medication Times</Text>
+                <Text style={styles.timesTitle}>Hora de Medicación</Text>
               </View>
               
               {errors.times && <Text style={styles.errorText}>{errors.times}</Text>}
@@ -364,10 +364,10 @@ const onTimeChange = (event: any, newValue?: Date) => {
                     }}
                   >
                     <View style={styles.timeIconContainer}>
-                      <Ionicons name="time-outline" size={20} color="#1a8e2d" />
+                      <Ionicons name="time-outline" size={20} color="#145269" />
                     </View>
                     <Text style={styles.timeButtonText}>{time}</Text>
-                    <Ionicons name="pencil-outline" size={18} color="#666" />
+                    <Ionicons name="pencil-outline" size={18} color="#145269" />
                   </TouchableOpacity>
 
                   {form.times.length > 1 && (
@@ -404,34 +404,34 @@ const onTimeChange = (event: any, newValue?: Date) => {
               <View style={styles.switchRow}>
                 <View style={styles.switchLabelContainer}>
                   <View style={styles.iconContainer}>
-                    <Ionicons name="notifications" size={20} color="#1a8e2d" />
+                    <Ionicons name="notifications" size={20} color="#145269" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.switchLabel}>Reminders</Text>
-                    <Text style={styles.switchSubLabel}>Get notified when it's time</Text>
+                    <Text style={styles.switchLabel}>Alertas</Text>
+                    <Text style={styles.switchSubLabel}>Recibe una notificación.</Text>
                   </View>
                 </View>
                 <Switch
                   value={form.reminderEnabled}
                   onValueChange={(value) => setForm({ ...form, reminderEnabled: value })}
-                  trackColor={{ false: "#ddd", true: "#1a8e2d" }}
+                  trackColor={{ false: "#ddd", true: "#145269" }}
                   thumbColor="white"
                 />
               </View>
             </View>
           </View>
 
-          {/* Inventario / Refill Tracking */}
+          {/* Inventario*/}
           <View style={styles.section}>
             <View style={styles.card}>
               <View style={styles.switchRow}>
                 <View style={styles.switchLabelContainer}>
                   <View style={styles.iconContainer}>
-                    <Ionicons name="reload" size={20} color="#1a8e2d" />
+                    <Ionicons name="reload" size={20} color="#145269" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.switchLabel}>Refill Tracking</Text>
-                    <Text style={styles.switchSubLabel}>Get notified when running low</Text>
+                    <Text style={styles.switchLabel}>Seguimiento de Inventario</Text>
+                    <Text style={styles.switchSubLabel}>Recibe una notificacion cuando el inventario sea bajo</Text>
                   </View>
                 </View>
                 <Switch
@@ -440,7 +440,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
                     setForm({ ...form, refillReminder: value });
                     if (!value) setErrors({ ...errors, currentSupply: "", refillAt: "" });
                   }}
-                  trackColor={{ false: "#ddd", true: "#1a8e2d" }}
+                  trackColor={{ false: "#ddd", true: "#145269" }}
                   thumbColor="white"
                 />
               </View>
@@ -488,7 +488,7 @@ const onTimeChange = (event: any, newValue?: Date) => {
             <View style={styles.textAreaContainer}>
               <TextInput
                 style={styles.textArea}
-                placeholder="Add notes or special instructions..."
+                placeholder="Añade instrucciones especiales..."
                 placeholderTextColor="#999"
                 value={form.notes}
                 onChangeText={(text) => setForm({ ...form, notes: text })}
@@ -508,18 +508,18 @@ const onTimeChange = (event: any, newValue?: Date) => {
             disabled={isSubmitting}
           >
             <LinearGradient
-              colors={["#1a8e2d", "#146922"]}
+              colors={["#1A778E", "#145269"]}
               style={styles.saveButtonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
               <Text style={styles.saveButtonText}>
-                {isSubmitting ? "Saving..." : isEditing ? "Update Medication" : "Add Medication"}
+                {isSubmitting ? "Saving..." : isEditing ? "Actualizar Medicación" : "Agregar Medicación"}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()} disabled={isSubmitting}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -542,10 +542,10 @@ const styles = StyleSheet.create({
   mainInput: { fontSize: 20, color: "#333", padding: 15 },
   optionsGrid: { flexDirection: "row", flexWrap: "wrap", marginHorizontal: -5 },
   optionCard: { width: (width - 60) / 2, backgroundColor: "white", borderRadius: 16, padding: 15, margin: 5, alignItems: "center", borderWidth: 1, borderColor: "#e0e0e0" },
-  selectedOptionCard: { backgroundColor: "#1a8e2d", borderColor: "#1a8e2d" },
+  selectedOptionCard: { backgroundColor: "#145269", borderColor: "#1a8e2d" },
   optionLabel: { fontSize: 14, fontWeight: "600", color: "#333", textAlign: "center" },
   selectedOptionLabel: { color: "white" },
-  durationNumber: { fontSize: 24, fontWeight: "700", color: "#1a8e2d", marginBottom: 5 },
+  durationNumber: { fontSize: 24, fontWeight: "700", color: "#145269", marginBottom: 5 },
   selectedDurationNumber: { color: "white" },
   inputContainer: { backgroundColor: "white", borderRadius: 16, marginBottom: 12, borderWidth: 1, borderColor: "#e0e0e0" },
   dateButton: { flexDirection: "row", alignItems: "center", backgroundColor: "white", borderRadius: 16, padding: 15, marginTop: 15, borderWidth: 1, borderColor: "#e0e0e0" },
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   timesHeaderRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
   timesTitle: { fontSize: 16, fontWeight: "600", color: "#333" },
   addTimeButton: { flexDirection: "row", alignItems: "center", gap: 5 },
-  addTimeButtonText: { fontSize: 14, fontWeight: "600", color: "#1a8e2d" },
+  addTimeButtonText: { fontSize: 14, fontWeight: "600", color: "#145269" },
   timeRowContainer: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 },
   timeButton: { flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "white", borderRadius: 16, padding: 15, borderWidth: 1, borderColor: "#e0e0e0" },
   timeIconContainer: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#f5f5f5", justifyContent: "center", alignItems: "center", marginRight: 10 },
