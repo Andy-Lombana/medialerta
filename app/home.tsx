@@ -64,6 +64,13 @@ const QUICK_ACTIONS = [
     color: "#E64A19",
     gradient: ["#FF5722", "#E64A19"] as [string, string],
   },
+  {
+    icon: "person-circle-outline" as const,
+    label: "User\nProfiles",
+    route: "/users" as const,
+    color: "#4527A0",
+    gradient: ["#673AB7", "#4527A0"] as [string, string],
+  },
 ];
 
 interface CircularProgressProps {
