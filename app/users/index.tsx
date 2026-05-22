@@ -28,7 +28,7 @@ import {
 
 type UserType = "Usuario" | "Cuidador" | "Doctor" | "Usuarios";
 
-// Definimos un estado inicial limpio para los formularios
+// Se define un estado inicial limpio para los formularios
 const initialUserState: UserProfile = {
   id: "",
   firstName: "",
@@ -85,7 +85,7 @@ export default function UsersScreen() {
         getCaregiverProfiles(),
         getDoctorProfiles(),
       ]);
-      // Nos super-aseguramos de que si llega un null/undefined, se guarde un arreglo vacío
+      // Si llega un null/undefined, se guarda un arreglo vacío
       setUsers(u || []);
       setCaregivers(c || []);
       setDoctors(d || []);
@@ -108,7 +108,7 @@ const handleSave = async () => {
         Alert.alert("Faltan datos", "El nombre es obligatorio.");
         return;
       }
-      // 💡 VALIDACIÓN CRÍTICA: Si 'users' no es un arreglo por corrupción, empezamos con []
+
       const currentUsers = Array.isArray(users) ? users : [];
       const updated = [...currentUsers, { ...userForm, id }];
       
@@ -122,7 +122,6 @@ const handleSave = async () => {
         Alert.alert("Faltan datos", "El nombre es obligatorio.");
         return;
       }
-      // 💡 VALIDACIÓN CRÍTICA
       const currentCaregivers = Array.isArray(caregivers) ? caregivers : [];
       const updated = [...currentCaregivers, { ...caregiverForm, id }];
       
@@ -136,7 +135,7 @@ const handleSave = async () => {
         Alert.alert("Faltan datos", "El nombre es obligatorio.");
         return;
       }
-      // 💡 VALIDACIÓN CRÍTICA
+
       const currentDoctors = Array.isArray(doctors) ? doctors : [];
       const updated = [...currentDoctors, { ...doctorForm, id }];
       
@@ -177,11 +176,11 @@ const handleSave = async () => {
       
       <View style={styles.cardContainer}>
         <TouchableOpacity style={[styles.scheduleCard, caregiverForm.is24Hours && styles.selectedCard]} onPress={() => setCaregiverForm({...caregiverForm, is24Hours: true})}>
-          <Ionicons name="infinite-outline" size={24} color={caregiverForm.is24Hours ? "white" : "#1a8e2d"} />
+          <Ionicons name="infinite-outline" size={24} color={caregiverForm.is24Hours ? "white" : "#37889A"} />
           <Text style={[styles.cardLabel, caregiverForm.is24Hours && styles.selectedCardLabel]}>Todos los días (24h)</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.scheduleCard, !caregiverForm.is24Hours && styles.selectedCard]} onPress={() => setCaregiverForm({...caregiverForm, is24Hours: false})}>
-          <Ionicons name="time-outline" size={24} color={!caregiverForm.is24Hours ? "white" : "#1a8e2d"} />
+          <Ionicons name="time-outline" size={24} color={!caregiverForm.is24Hours ? "white" : "#37889A"} />
           <Text style={[styles.cardLabel, !caregiverForm.is24Hours && styles.selectedCardLabel]}>Horario Específico</Text>
         </TouchableOpacity>
       </View>
@@ -193,7 +192,7 @@ const handleSave = async () => {
             <View style={{ flex: 1 }}><Text style={styles.label}>Salida</Text><TextInput style={styles.input} value={caregiverForm.endTime} onChangeText={(t) => setCaregiverForm({...caregiverForm, endTime: t})} /></View>
           </View>
           <Text style={styles.label}>Días de la semana</Text>
-          {/* Añadida protección para asegurar que daysOfWeek sea un array antes de hacer .join() */}
+          
           <TextInput style={styles.input} placeholder="Ej: Lunes a Viernes" value={Array.isArray(caregiverForm.daysOfWeek) ? caregiverForm.daysOfWeek.join(", ") : ""} onChangeText={(t) => setCaregiverForm({...caregiverForm, daysOfWeek: t.split(",").map(s => s.trim())})} />
         </View>
       )}
@@ -211,7 +210,7 @@ const handleSave = async () => {
   );
 
   const renderUsuariosCards = () => {
-    // 💡 PROTECCIÓN: Usamos "Array.isArray" y fallback "|| []" para garantizar que la app nunca se caiga aquí
+    // Se usa "Array.isArray" y fallback "|| []" para que la app nunca se caiga
     const safeUsers = Array.isArray(users) ? users.map(u => ({ ...u, type: "Usuario" })) : [];
     const safeCaregivers = Array.isArray(caregivers) ? caregivers.map(c => ({ ...c, type: "Cuidador" })) : [];
     const safeDoctors = Array.isArray(doctors) ? doctors.map(d => ({ ...d, type: "Doctor" })) : [];
@@ -221,7 +220,7 @@ const handleSave = async () => {
     if (all.length === 0) {
       return (
         <View style={styles.emptyState}>
-          <Ionicons name="people-outline" size={64} color="#ccc" />
+          <Ionicons name="people" size={64} color="#37889A" />
           <Text style={styles.emptyText}>No hay perfiles registrados</Text>
         </View>
       );
@@ -231,7 +230,7 @@ const handleSave = async () => {
       <View style={styles.cardsGrid}>
         {all.map((item, idx) => (
           <TouchableOpacity
-            key={item.id || idx.toString()} // Es mejor usar el ID si existe
+            key={item.id || idx.toString()}
             style={styles.profileCard}
             onPress={() => {
               setSelectedProfile(item as any);
@@ -242,7 +241,7 @@ const handleSave = async () => {
               <Ionicons 
                 name={item.type === "Usuario" ? "person" : item.type === "Cuidador" ? "walk" : "medical"} 
                 size={24} 
-                color="#1a8e2d" 
+                color="#37889A" 
               />
               <Text style={styles.cardBadge}>{item.type}</Text>
             </View>
@@ -256,8 +255,8 @@ const handleSave = async () => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <LinearGradient colors={["#1a8e2d", "#146922"]} style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}><Ionicons name="chevron-back" size={28} color="white" /></TouchableOpacity>
+      <LinearGradient colors={["#1A778E", "#145269"]} style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}><Ionicons name="chevron-back" size={28} color="#145269" /></TouchableOpacity>
         <Text style={styles.headerTitle}>Perfiles de Usuario</Text>
       </LinearGradient>
       <View style={styles.tabs}>
@@ -329,11 +328,23 @@ const handleSave = async () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa" },
   header: { paddingTop: 50, paddingBottom: 20, paddingHorizontal: 20, flexDirection: "row", alignItems: "center" },
-  backButton: { marginRight: 15 },
-  headerTitle: { fontSize: 24, fontWeight: "bold", color: "white" },
+   backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerTitle: { fontSize: 24, fontWeight: "bold", color: "white", marginLeft: 15 },
   tabs: { flexDirection: "row", backgroundColor: "white", padding: 5, margin: 20, borderRadius: 12, elevation: 2 },
   tab: { flex: 1, paddingVertical: 10, alignItems: "center", borderRadius: 8 },
-  activeTab: { backgroundColor: "#1a8e2d" },
+  activeTab: { backgroundColor: "#145269" },
   tabText: { fontWeight: "600", color: "#666" },
   activeTabText: { color: "white" },
   scrollContent: { padding: 20 },
@@ -344,24 +355,24 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", marginBottom: 5 },
   label: { fontSize: 14, fontWeight: "600", color: "#666", marginBottom: 5, marginLeft: 5 },
   cardContainer: { flexDirection: "row", gap: 10, marginBottom: 20 },
-  scheduleCard: { flex: 1, backgroundColor: "white", borderRadius: 12, padding: 15, alignItems: "center", borderWidth: 1, borderColor: "#1a8e2d" },
-  selectedCard: { backgroundColor: "#1a8e2d" },
-  cardLabel: { fontSize: 12, fontWeight: "700", color: "#1a8e2d", marginTop: 8, textAlign: "center" },
+  scheduleCard: { flex: 1, backgroundColor: "white", borderRadius: 12, padding: 15, alignItems: "center", borderWidth: 1, borderColor: "#145269" },
+  selectedCard: { backgroundColor: "#145269" },
+  cardLabel: { fontSize: 12, fontWeight: "700", color: "#145269", marginTop: 8, textAlign: "center" },
   selectedCardLabel: { color: "white" },
   scheduleDetails: { marginTop: 10 },
-  saveButton: { backgroundColor: "#1a8e2d", padding: 15, borderRadius: 12, alignItems: "center", marginTop: 30, marginBottom: 50 },
+  saveButton: { backgroundColor: "#145269", padding: 15, borderRadius: 12, alignItems: "center", marginTop: 30, marginBottom: 50 },
   saveButtonText: { color: "white", fontSize: 16, fontWeight: "bold" },
   cardsGrid: { gap: 15 },
   profileCard: { backgroundColor: "white", borderRadius: 16, padding: 15, elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
-  cardBadge: { backgroundColor: "#e8f5e9", color: "#1a8e2d", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, fontSize: 12, fontWeight: "bold" },
+  cardBadge: { backgroundColor: "#E3E7E8", color: "#1A778E", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, fontSize: 12, fontWeight: "bold" },
   cardName: { fontSize: 18, fontWeight: "bold", color: "#333" },
   cardPhone: { fontSize: 14, color: "#666", marginTop: 5 },
   emptyState: { alignItems: "center", paddingVertical: 50 },
   emptyText: { color: "#999", fontSize: 16, marginTop: 10 },
   modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", padding: 20 },
   modalContent: { backgroundColor: "white", borderRadius: 24, padding: 25, width: "100%", maxHeight: "80%" },
-  detailTitle: { fontSize: 22, fontWeight: "bold", color: "#1a8e2d", marginBottom: 20, textAlign: "center" },
+  detailTitle: { fontSize: 22, fontWeight: "bold", color: "#145269", marginBottom: 20, textAlign: "center" },
   detailSection: { marginBottom: 20 },
   detailLabel: { fontSize: 12, fontWeight: "bold", color: "#999", textTransform: "uppercase", marginBottom: 5 },
   detailValue: { fontSize: 16, color: "#333", marginBottom: 15 },

@@ -19,7 +19,7 @@ import {
 } from "../../utils/storage";
 import { useFocusEffect } from "@react-navigation/native";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["Lun", "Mar", "Mie", "Jue", "Vier", "Sab", "Dom"];
 
 export default function CalendarScreen() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function CalendarScreen() {
       setMedications(meds);
       setDoseHistory(history);
     } catch (error) {
-      console.error("Error loading calendar data:", error);
+      console.error("Error al cargar los datos del calendario:", error);
     }
   }, []);
 
@@ -131,7 +131,7 @@ export default function CalendarScreen() {
       const durationMatch = med.duration.match(/\d+/);
       const durationDays = durationMatch ? parseInt(durationMatch[0]) : -1;
 
-      if (durationDays === -1 || med.duration.toLowerCase().includes('ongoing')) return true;
+      if (durationDays === -1 || med.duration.toLowerCase().includes('En curso')) return true;
 
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + durationDays - 1);
@@ -146,8 +146,8 @@ export default function CalendarScreen() {
     if (activeMeds.length === 0) {
       return (
         <View style={styles.emptySchedule}>
-          <Ionicons name="cafe-outline" size={48} color="#ccc" />
-          <Text style={styles.emptyScheduleText}>No medications scheduled for this day</Text>
+          <Ionicons name="medical" size={48} color="#ccc" />
+          <Text style={styles.emptyScheduleText}>No hay medicamentos programados para este día.</Text>
         </View>
       );
     }
@@ -172,8 +172,8 @@ export default function CalendarScreen() {
           </View>
           {taken ? (
             <View style={styles.takenBadge}>
-              <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
-              <Text style={styles.takenText}>Taken</Text>
+              <Ionicons name="checkmark-circle" size={20} color="#37889A" />
+              <Text style={styles.takenText}>Tomada</Text>
             </View>
           ) : (
             <TouchableOpacity
@@ -193,7 +193,7 @@ export default function CalendarScreen() {
                 loadData();
               }}
             >
-              <Text style={styles.takeDoseText}>{isFuture ? "Future" : "Take"}</Text>
+              <Text style={styles.takeDoseText}>{isFuture ? "Proximo" : "Tomar"}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -204,7 +204,7 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#1A778E", "#145269"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -216,9 +216,9 @@ export default function CalendarScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#145269" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Calendar</Text>
+          <Text style={styles.headerTitle}>Calendario</Text>
         </View>
 
         <View style={styles.calendarContainer}>
@@ -375,14 +375,14 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   today: {
-    backgroundColor: "#1a8e2d15",
+    backgroundColor: "#B2DEED",
   },
   todayText: {
-    color: "#1a8e2d",
+    color: "#37889A",
     fontWeight: "600",
   },
   selectedDay: {
-    backgroundColor: "#1a8e2d",
+    backgroundColor: "#1A778E",
     borderRadius: 8,
   },
   selectedDayText: {
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#1a8e2d",
+    backgroundColor: "#29AED9",
     position: "absolute",
     bottom: "15%",
   },
@@ -470,13 +470,13 @@ const styles = StyleSheet.create({
   takenBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E8F5E9",
+    backgroundColor: "#E3E7E8",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
   },
   takenText: {
-    color: "#4CAF50",
+    color: "#1A778E",
     fontWeight: "600",
     fontSize: 14,
     marginLeft: 4,

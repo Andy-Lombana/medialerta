@@ -38,38 +38,38 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const QUICK_ACTIONS = [
   {
     icon: "add-circle-outline" as const,
-    label: "Add\nMedication",
+    label: "Agregar\nMedicación",
     route: "/medications/add" as const,
-    color: "#2E7D32",
-    gradient: ["#4CAF50", "#2E7D32"] as [string, string],
+    color: "#1A778E",
+    gradient: ["#1A778E", "#145269"] as [string, string],
   },
   {
     icon: "calendar-outline" as const,
-    label: "Calendar\nView",
+    label: "Calendario",
     route: "/calendar" as const,
     color: "#1976D2",
-    gradient: ["#2196F3", "#1976D2"] as [string, string],
+    gradient: ["#BA4530", "#7D2F22"] as [string, string],
   },
   {
     icon: "time-outline" as const,
-    label: "History\nLog",
+    label: "Historial",
     route: "/history" as const,
     color: "#C2185B",
-    gradient: ["#E91E63", "#C2185B"] as [string, string],
+    gradient: ["#BDA42B", "#717D19"] as [string, string],
   },
   {
     icon: "medical-outline" as const,
-    label: "Refill\nTracker",
+    label: "Inventario",
     route: "/refills" as const,
     color: "#E64A19",
-    gradient: ["#FF5722", "#E64A19"] as [string, string],
+    gradient: ["#6BBA30", "#497A21"] as [string, string],
   },
   {
     icon: "person-circle-outline" as const,
-    label: "User\nProfiles",
+    label: "Perfiles de \nUsuarios",
     route: "/users" as const,
     color: "#4527A0",
-    gradient: ["#673AB7", "#4527A0"] as [string, string],
+    gradient: ["#453FD4", "#2E2A8C"] as [string, string],
   },
 ];
 
@@ -110,7 +110,7 @@ function CircularProgress({
           {Math.round(progress * 100)}%
         </Text>
         <Text style={styles.progressDetails}>
-          {completedDoses} of {totalDoses} doses
+          Dosis {completedDoses} de {totalDoses}
         </Text>
       </View>
       <Svg width={size} height={size} style={styles.progressRing}>
@@ -157,7 +157,7 @@ export default function HomeScreen() {
       setDoseHistory(todaysDoses);
       setMedications(allMedications);
 
-      // Filter medications for today
+      // Filtrar medicamentos para hoy
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -172,17 +172,17 @@ export default function HomeScreen() {
         if (isNaN(durationDays)) return false;
 
         const endDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
-        // Incluimos el medicamento si hoy es antes de la fecha de finalización
+        // Incluye el medicamento si es hoy, antes de la fecha de finalización
         return today < endDate;
       });
 
       setTodaysMedications(todayMeds);
 
-      // Calculate completed doses
+      // Calcular las dosis completadas
       const completed = todaysDoses.filter((dose) => dose.taken).length;
       setCompletedDoses(completed);
     } catch (error) {
-      console.error("Error loading medications:", error);
+      console.error("Error al cargar las medicinas:", error);
     }
   }, []);
 
@@ -190,11 +190,11 @@ export default function HomeScreen() {
     try {
       const token = await registerForPushNotificationsAsync();
       if (!token) {
-        console.log("Failed to get push notification token");
+        console.log("No se pudo obtener el token de notificación push.");
         return;
       }
 
-      // Schedule reminders for all medications
+    // Programar recordatorios para todos los medicamentos.
       const medications = await getMedications();
       for (const medication of medications) {
         if (medication.reminderEnabled) {
@@ -202,16 +202,15 @@ export default function HomeScreen() {
         }
       }
     } catch (error) {
-      console.error("Error setting up notifications:", error);
+      console.error("Error al configurar las notificaciones:", error);
     }
   };
 
-  // Use useEffect for initial load
+  // Utiliza useEffect para la carga inicial.
   useEffect(() => {
     loadMedications();
     setupNotifications();
 
-    // Handle app state changes for notifications
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "active") {
         loadMedications();
@@ -223,11 +222,9 @@ export default function HomeScreen() {
     };
   }, []);
 
-  // Use useFocusEffect for subsequent updates
   useFocusEffect(
     useCallback(() => {
       const unsubscribe = () => {
-        // Cleanup if needed
       };
 
       loadMedications();
@@ -238,21 +235,21 @@ export default function HomeScreen() {
   const handleTakeDose = async (medication: Medication) => {
     try {
       await recordDose(medication.id, true, new Date().toISOString());
-      await loadMedications(); // Reload data after recording dose
+      await loadMedications();
     } catch (error) {
-      console.error("Error recording dose:", error);
-      Alert.alert("Error", "Failed to record dose. Please try again.");
+      console.error("Error dosis de registro:", error);
+      Alert.alert("Error", "No se pudo registrar la dosis. Inténtelo de nuevo.");
     }
   };
 
   const handleDeleteMedication = async (medicationId: string) => {
     Alert.alert(
-      "Delete Medication",
-      "Are you sure you want to delete this medication and all its reminders?",
+      "Borrar medicacion",
+      "¿Está seguro de que desea eliminar este medicamento y todos sus recordatorios?",
       [
-        { text: "Cancel", style: "cancel" },
+        { text: "Cancelar", style: "cancel" },
         {
-          text: "Delete",
+          text: "Borrar",
           style: "destructive",
           onPress: async () => {
             try {
@@ -260,8 +257,8 @@ export default function HomeScreen() {
               await cancelMedicationReminders(medicationId);
               loadMedications();
             } catch (error) {
-              console.error("Delete error:", error);
-              Alert.alert("Error", "Could not delete medication");
+              console.error("Error de borrado:", error);
+              Alert.alert("Error", "No se pudo eliminar el medicamento");
             }
           },
         },
@@ -288,25 +285,12 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <LinearGradient colors={["#1a8e2d", "#146922"]} style={styles.header}>
+      <LinearGradient colors={["#1A778E", "#145269"]} style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>
             <View style={styles.flex1}>
-              <Text style={styles.greeting}>Daily Progress</Text>
+              <Text style={styles.greeting}>Progreso Diario</Text>
             </View>
-            <TouchableOpacity
-              style={styles.notificationButton}
-              onPress={() => setShowNotifications(true)}
-            >
-              <Ionicons name="notifications-outline" size={24} color="white" />
-              {todaysMedications.length > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationCount}>
-                    {todaysMedications.length}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
           </View>
           <CircularProgress
             progress={progress}
@@ -318,7 +302,7 @@ export default function HomeScreen() {
 
       <View style={styles.content}>
         <View style={styles.quickActionsContainer}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           <View style={styles.quickActionsGrid}>
             {QUICK_ACTIONS.map((action) => (
               <Link href={action.route} key={action.label} asChild>
@@ -342,10 +326,10 @@ export default function HomeScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Today's Schedule</Text>
+            <Text style={styles.sectionTitle}>Horario del Día</Text>
             <Link href="/calendar" asChild>
               <TouchableOpacity>
-                <Text style={styles.seeAllButton}>See All</Text>
+                <Text style={styles.seeAllButton}>Ver todo</Text>
               </TouchableOpacity>
             </Link>
           </View>
@@ -353,12 +337,12 @@ export default function HomeScreen() {
             <View style={styles.emptyState}>
               <Ionicons name="medical-outline" size={48} color="#ccc" />
               <Text style={styles.emptyStateText}>
-                No medications scheduled for today
+                No hay medicamentos programados para hoy.
               </Text>
               <Link href="/medications/add" asChild>
                 <TouchableOpacity style={styles.addMedicationButton}>
                   <Text style={styles.addMedicationButtonText}>
-                    Add Medication
+                    Agregar Medicación
                   </Text>
                 </TouchableOpacity>
               </Link>
@@ -396,9 +380,9 @@ export default function HomeScreen() {
                       <Ionicons
                         name="checkmark-circle"
                         size={20}
-                        color="#4CAF50"
+                        color="#37889A"
                       />
-                      <Text style={styles.takenText}>Taken</Text>
+                      <Text style={styles.takenText}>Tomada</Text>
                     </View>
                   ) : (
                     <TouchableOpacity
@@ -408,12 +392,12 @@ export default function HomeScreen() {
                       ]}
                       onPress={() => handleTakeDose(medication)}
                     >
-                      <Text style={styles.takeDoseText}>Take</Text>
+                      <Text style={styles.takeDoseText}>Tomar</Text>
                     </TouchableOpacity>
                   )}
                     <View style={styles.managementButtons}>
                       <TouchableOpacity onPress={() => handleEditMedication(medication)} style={styles.iconButton}>
-                        <Ionicons name="pencil-outline" size={18} color="#1a8e2d" />
+                        <Ionicons name="pencil-outline" size={18} color="#37889A" />
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => handleDeleteMedication(medication.id)} style={styles.iconButton}>
                         <Ionicons name="trash-outline" size={18} color="#FF5252" />
@@ -436,7 +420,7 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Notifications</Text>
+              <Text style={styles.modalTitle}>Notificaciones</Text>
               <TouchableOpacity
                 onPress={() => setShowNotifications(false)}
                 style={styles.closeButton}
@@ -565,7 +549,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   seeAllButton: {
-    color: "#2E7D32",
+    color: "#4092E3",
     fontWeight: "600",
   },
   doseCard: {
@@ -756,7 +740,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   addMedicationButton: {
-    backgroundColor: "#1a8e2d",
+    backgroundColor: "#1A778E",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
@@ -768,14 +752,14 @@ const styles = StyleSheet.create({
   takenBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E8F5E9",
+    backgroundColor: "#E3E7E8",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     marginLeft: 10,
   },
   takenText: {
-    color: "#4CAF50",
+    color: "#1A778E",
     fontWeight: "600",
     fontSize: 14,
     marginLeft: 4,

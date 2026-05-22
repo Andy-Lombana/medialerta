@@ -26,8 +26,8 @@ export default function HistoryScreen() {
   const router = useRouter();
   const [history, setHistory] = useState<EnrichedDoseHistory[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<
-    "all" | "taken" | "missed"
-  >("all");
+    "todas" | "tomadas" | "perdidas"
+  >("todas");
 
   const loadHistory = useCallback(async () => {
     try {
@@ -36,7 +36,7 @@ export default function HistoryScreen() {
         getMedications(),
       ]);
 
-      // Combine history with medication details
+      // historial de la medicación.
       const enrichedHistory = doseHistory.map((dose) => ({
         ...dose,
         medication: medications.find((med) => med.id === dose.medicationId),
@@ -44,7 +44,7 @@ export default function HistoryScreen() {
 
       setHistory(enrichedHistory);
     } catch (error) {
-      console.error("Error loading history:", error);
+      console.error("Error al cargar el historial:", error);
     }
   }, []);
 
@@ -70,9 +70,9 @@ export default function HistoryScreen() {
   };
 
   const filteredHistory = history.filter((dose) => {
-    if (selectedFilter === "all") return true;
-    if (selectedFilter === "taken") return dose.taken;
-    if (selectedFilter === "missed") return !dose.taken;
+    if (selectedFilter === "todas") return true;
+    if (selectedFilter === "tomadas") return dose.taken;
+    if (selectedFilter === "perdidas") return !dose.taken;
     return true;
   });
 
@@ -80,24 +80,24 @@ export default function HistoryScreen() {
 
   const handleClearAllData = () => {
     Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to clear all medication data? This action cannot be undone.",
+      "Borrar todos los datos",
+      "¿Está seguro de que desea borrar todos los datos de medicación? Esta acción no se puede deshacer.",
       [
         {
-          text: "Cancel",
+          text: "Cancelar",
           style: "cancel",
         },
         {
-          text: "Clear All",
+          text: "Borrar Todo",
           style: "destructive",
           onPress: async () => {
             try {
               await clearAllData();
               await loadHistory();
-              Alert.alert("Success", "All data has been cleared successfully");
+              Alert.alert("Hecho", "Todos los datos se han borrado correctamente");
             } catch (error) {
-              console.error("Error clearing data:", error);
-              Alert.alert("Error", "Failed to clear data. Please try again.");
+              console.error("Error al borrar los datos:", error);
+              Alert.alert("Error", "No se pudieron borrar los datos. Inténtelo de nuevo.");
             }
           },
         },
@@ -108,7 +108,7 @@ export default function HistoryScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#1a8e2d", "#146922"]}
+        colors={["#1A778E", "#145269"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -120,9 +120,9 @@ export default function HistoryScreen() {
             onPress={() => router.back()}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
+            <Ionicons name="chevron-back" size={28} color="#145269" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>History Log</Text>
+          <Text style={styles.headerTitle}>Historial</Text>
         </View>
 
         <View style={styles.filtersContainer}>
@@ -134,49 +134,49 @@ export default function HistoryScreen() {
             <TouchableOpacity
               style={[
                 styles.filterButton,
-                selectedFilter === "all" && styles.filterButtonActive,
+                selectedFilter === "todas" && styles.filterButtonActive,
               ]}
-              onPress={() => setSelectedFilter("all")}
+              onPress={() => setSelectedFilter("todas")}
             >
               <Text
                 style={[
                   styles.filterText,
-                  selectedFilter === "all" && styles.filterTextActive,
+                  selectedFilter === "todas" && styles.filterTextActive,
                 ]}
               >
-                All
+                Todas
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.filterButton,
-                selectedFilter === "taken" && styles.filterButtonActive,
+                selectedFilter === "tomadas" && styles.filterButtonActive,
               ]}
-              onPress={() => setSelectedFilter("taken")}
+              onPress={() => setSelectedFilter("tomadas")}
             >
               <Text
                 style={[
                   styles.filterText,
-                  selectedFilter === "taken" && styles.filterTextActive,
+                  selectedFilter === "tomadas" && styles.filterTextActive,
                 ]}
               >
-                Taken
+                Tomadas
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.filterButton,
-                selectedFilter === "missed" && styles.filterButtonActive,
+                selectedFilter === "perdidas" && styles.filterButtonActive,
               ]}
-              onPress={() => setSelectedFilter("missed")}
+              onPress={() => setSelectedFilter("perdidas")}
             >
               <Text
                 style={[
                   styles.filterText,
-                  selectedFilter === "missed" && styles.filterTextActive,
+                  selectedFilter === "perdidas" && styles.filterTextActive,
                 ]}
               >
-                Missed
+                Perdidas
               </Text>
             </TouchableOpacity>
           </ScrollView>
@@ -205,7 +205,7 @@ export default function HistoryScreen() {
                   />
                   <View style={styles.medicationInfo}>
                     <Text style={styles.medicationName}>
-                      {dose.medication?.name || "Unknown Medication"}
+                      {dose.medication?.name || "Medicamento desconocido"}
                     </Text>
                     <Text style={styles.medicationDosage}>
                       {dose.medication?.dosage}
@@ -222,16 +222,16 @@ export default function HistoryScreen() {
                       <View
                         style={[
                           styles.statusBadge,
-                          { backgroundColor: "#E8F5E9" },
+                          { backgroundColor: "#E3E7E8" },
                         ]}
                       >
                         <Ionicons
                           name="checkmark-circle"
                           size={16}
-                          color="#4CAF50"
+                          color="#37889A"
                         />
-                        <Text style={[styles.statusText, { color: "#4CAF50" }]}>
-                          Taken
+                        <Text style={[styles.statusText, { color: "#1A778E" }]}>
+                          Tomada
                         </Text>
                       </View>
                     ) : (
@@ -247,7 +247,7 @@ export default function HistoryScreen() {
                           color="#F44336"
                         />
                         <Text style={[styles.statusText, { color: "#F44336" }]}>
-                          Missed
+                          Perdida
                         </Text>
                       </View>
                     )}
@@ -263,7 +263,7 @@ export default function HistoryScreen() {
               onPress={handleClearAllData}
             >
               <Ionicons name="trash-outline" size={20} color="#FF5252" />
-              <Text style={styles.clearDataText}>Clear All Data</Text>
+              <Text style={styles.clearDataText}>Borrar Todos los Datos</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -333,8 +333,8 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
   },
   filterButtonActive: {
-    backgroundColor: "#1a8e2d",
-    borderColor: "#1a8e2d",
+    backgroundColor: "#1A778E",
+    borderColor: "#1A778E",
   },
   filterText: {
     fontSize: 14,
