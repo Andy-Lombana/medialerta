@@ -2,6 +2,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 const MEDICATIONS_KEY = "@medications";
 const DOSE_HISTORY_KEY = "@dose_history";
+const USER_PROFILE_KEY = "@user_profile";
+const CAREGIVER_PROFILE_KEY = "@caregiver_profile";
+const DOCTOR_PROFILE_KEY = "@doctor_profile";
 
 export interface Medication {
   id: string;
@@ -25,6 +28,37 @@ export interface DoseHistory {
   medicationId: string;
   timestamp: string;
   taken: boolean;
+}
+
+export interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  idCard: string;
+  birthYear: string;
+  birthDays: string;
+  medicalHistory: string;
+}
+
+export interface CaregiverProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  idCard: string;
+  startTime: string;
+  endTime: string;
+  daysOfWeek: string[];
+  is24Hours: boolean;
+}
+
+export interface DoctorProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  clinic: string;
 }
 
 export async function getMedications(): Promise<Medication[]> {
@@ -137,9 +171,69 @@ export async function recordDose(
   }
 }
 
+export async function saveUserProfiles(profiles: UserProfile[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profiles));
+  } catch (error) {
+    console.error("Error saving user profiles:", error);
+  }
+}
+
+export async function getUserProfiles(): Promise<UserProfile[]> {
+  try {
+    const data = await AsyncStorage.getItem(USER_PROFILE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return [];
+  }
+}
+
+export async function saveCaregiverProfiles(profiles: CaregiverProfile[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem(CAREGIVER_PROFILE_KEY, JSON.stringify(profiles));
+  } catch (error) {
+    console.error("Error saving caregiver profiles:", error);
+  }
+}
+
+export async function getCaregiverProfiles(): Promise<CaregiverProfile[]> {
+  try {
+    const data = await AsyncStorage.getItem(CAREGIVER_PROFILE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting caregiver profile:", error);
+    return [];
+  }
+}
+
+export async function saveDoctorProfiles(profiles: DoctorProfile[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem(DOCTOR_PROFILE_KEY, JSON.stringify(profiles));
+  } catch (error) {
+    console.error("Error saving doctor profiles:", error);
+  }
+}
+
+export async function getDoctorProfiles(): Promise<DoctorProfile[]> {
+  try {
+    const data = await AsyncStorage.getItem(DOCTOR_PROFILE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting doctor profile:", error);
+    return [];
+  }
+}
+
 export async function clearAllData(): Promise<void> {
   try {
-    await AsyncStorage.multiRemove([MEDICATIONS_KEY, DOSE_HISTORY_KEY]);
+    await AsyncStorage.multiRemove([
+      MEDICATIONS_KEY, 
+      DOSE_HISTORY_KEY,
+      USER_PROFILE_KEY,
+      CAREGIVER_PROFILE_KEY,
+      DOCTOR_PROFILE_KEY
+    ]);
   } catch (error) {
     console.error("Error clearing data:", error);
     throw error;
