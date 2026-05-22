@@ -28,7 +28,6 @@ import {
 
 type UserType = "Usuario" | "Cuidador" | "Doctor" | "Usuarios";
 
-// Se define un estado inicial limpio para los formularios
 const initialUserState: UserProfile = {
   id: "",
   firstName: "",
@@ -85,7 +84,6 @@ export default function UsersScreen() {
         getCaregiverProfiles(),
         getDoctorProfiles(),
       ]);
-      // Si llega un null/undefined, se guarda un arreglo vacío
       setUsers(u || []);
       setCaregivers(c || []);
       setDoctors(d || []);
@@ -97,59 +95,124 @@ export default function UsersScreen() {
     }
   };
 
-const handleSave = async () => {
-  if (activeTab === "Usuarios") return;
+  const handleDeleteProfile = async (profile: UserProfile | CaregiverProfile | DoctorProfile, type: string) => {
+    Alert.alert(
+      "Eliminar Perfil",
+      `¿Estás seguro de que deseas eliminar el perfil de ${profile.firstName}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              if (type === "Usuario") {
+                const updated = users.filter((u) => u.id !== profile.id);
+                await saveUserProfiles(updated);
+                setUsers(updated);
+              } else if (type === "Cuidador") {
+                const updated = caregivers.filter((c) => c.id !== profile.id);
+                await saveCaregiverProfiles(updated);
+                setCaregivers(updated);
+              } else if (type === "Doctor") {
+                const updated = doctors.filter((d) => d.id !== profile.id);
+                await saveDoctorProfiles(updated);
+                setDoctors(updated);
+              }
+            } catch (error) {
+              console.error("Error al eliminar perfil:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
 
-  try {
-    const id = Math.random().toString(36).substr(2, 9);
-
-    if (activeTab === "Usuario") {
-      if (!userForm.firstName.trim()) {
-        Alert.alert("Faltan datos", "El nombre es obligatorio.");
-        return;
-      }
-
-      const currentUsers = Array.isArray(users) ? users : [];
-      const updated = [...currentUsers, { ...userForm, id }];
-      
-      await saveUserProfiles(updated);
-      setUsers(updated);
-      setUserForm(initialUserState);
-    } 
-    
-    else if (activeTab === "Cuidador") {
-      if (!caregiverForm.firstName.trim()) {
-        Alert.alert("Faltan datos", "El nombre es obligatorio.");
-        return;
-      }
-      const currentCaregivers = Array.isArray(caregivers) ? caregivers : [];
-      const updated = [...currentCaregivers, { ...caregiverForm, id }];
-      
-      await saveCaregiverProfiles(updated);
-      setCaregivers(updated);
-      setCaregiverForm(initialCaregiverState);
-    } 
-    
-    else if (activeTab === "Doctor") {
-      if (!doctorForm.firstName.trim()) {
-        Alert.alert("Faltan datos", "El nombre es obligatorio.");
-        return;
-      }
-
-      const currentDoctors = Array.isArray(doctors) ? doctors : [];
-      const updated = [...currentDoctors, { ...doctorForm, id }];
-      
-      await saveDoctorProfiles(updated);
-      setDoctors(updated);
-      setDoctorForm(initialDoctorState);
+  const handleEditProfile = (profile: UserProfile | CaregiverProfile | DoctorProfile, type: string) => {
+    if (type === "Usuario") {
+      setUserForm(profile as UserProfile);
+      setActiveTab("Usuario");
+    } else if (type === "Cuidador") {
+      setCaregiverForm(profile as CaregiverProfile);
+      setActiveTab("Cuidador");
+    } else if (type === "Doctor") {
+      setDoctorForm(profile as DoctorProfile);
+      setActiveTab("Doctor");
     }
+  };
 
-    Alert.alert("Éxito", `Perfil de ${activeTab} guardado correctamente.`);
-  } catch (error) {
-    console.error("Error crítico al guardar perfil:", error);
-    Alert.alert("Error", "No se pudo guardar la información de manera estable.");
-  }
-};
+  const handleSave = async () => {
+    if (activeTab === "Usuarios") return;
+
+    try {
+      if (activeTab === "Usuario") {
+        if (!userForm.firstName.trim()) {
+          Alert.alert("Faltan datos", "El nombre es obligatorio.");
+          return;
+        }
+
+        const currentUsers = Array.isArray(users) ? users : [];
+        let updated;
+
+        if (userForm.id) {
+          updated = currentUsers.map(u => u.id === userForm.id ? userForm : u);
+        } else {
+          const id = Math.random().toString(36).substr(2, 9);
+          updated = [...currentUsers, { ...userForm, id }];
+        }
+        
+        await saveUserProfiles(updated);
+        setUsers(updated);
+        setUserForm(initialUserState);
+      } 
+      
+      else if (activeTab === "Cuidador") {
+        if (!caregiverForm.firstName.trim()) {
+          Alert.alert("Faltan datos", "El nombre es obligatorio.");
+          return;
+        }
+        const currentCaregivers = Array.isArray(caregivers) ? caregivers : [];
+        let updated;
+        
+        if (caregiverForm.id) {
+          updated = currentCaregivers.map(c => c.id === caregiverForm.id ? caregiverForm : c);
+        } else {
+          const id = Math.random().toString(36).substr(2, 9);
+          updated = [...currentCaregivers, { ...caregiverForm, id }];
+        }
+
+        await saveCaregiverProfiles(updated);
+        setCaregivers(updated);
+        setCaregiverForm(initialCaregiverState);
+      } 
+      
+      else if (activeTab === "Doctor") {
+        if (!doctorForm.firstName.trim()) {
+          Alert.alert("Faltan datos", "El nombre es obligatorio.");
+          return;
+        }
+
+        const currentDoctors = Array.isArray(doctors) ? doctors : [];
+        let updated;
+
+        if (doctorForm.id) {
+          updated = currentDoctors.map(d => d.id === doctorForm.id ? doctorForm : d);
+        } else {
+          const id = Math.random().toString(36).substr(2, 9);
+          updated = [...currentDoctors, { ...doctorForm, id }];
+        }
+        
+        await saveDoctorProfiles(updated);
+        setDoctors(updated);
+        setDoctorForm(initialDoctorState);
+      }
+
+      Alert.alert("Éxito", `Perfil de ${activeTab} guardado correctamente.`);
+    } catch (error) {
+      console.error("Error crítico al guardar perfil:", error);
+      Alert.alert("Error", "No se pudo guardar la información de manera estable.");
+    }
+  };
 
   const renderUserForm = () => (
     <View style={styles.form}>
@@ -188,11 +251,18 @@ const handleSave = async () => {
       {!caregiverForm.is24Hours && (
         <View style={styles.scheduleDetails}>
           <View style={styles.row}>
-            <View style={{ flex: 1, marginRight: 10 }}><Text style={styles.label}>Inicio</Text><TextInput style={styles.input} value={caregiverForm.startTime} onChangeText={(t) => setCaregiverForm({...caregiverForm, startTime: t})} /></View>
-            <View style={{ flex: 1 }}><Text style={styles.label}>Salida</Text><TextInput style={styles.input} value={caregiverForm.endTime} onChangeText={(t) => setCaregiverForm({...caregiverForm, endTime: t})} /></View>
+            {/* Se limpian los saltos de línea y se estructuran los bloques hijos limpiamente */}
+            <View style={{ flex: 1, marginRight: 10 }}>
+              <Text style={styles.label}>Inicio</Text>
+              <TextInput style={styles.input} value={caregiverForm.startTime} onChangeText={(t) => setCaregiverForm({...caregiverForm, startTime: t})} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.label}>Salida</Text>
+              <TextInput style={styles.input} value={caregiverForm.endTime} onChangeText={(t) => setCaregiverForm({...caregiverForm, endTime: t})} />
+            </View>
           </View>
-          <Text style={styles.label}>Días de la semana</Text>
           
+          <Text style={styles.label}>Días de la semana</Text>
           <TextInput style={styles.input} placeholder="Ej: Lunes a Viernes" value={Array.isArray(caregiverForm.daysOfWeek) ? caregiverForm.daysOfWeek.join(", ") : ""} onChangeText={(t) => setCaregiverForm({...caregiverForm, daysOfWeek: t.split(",").map(s => s.trim())})} />
         </View>
       )}
@@ -210,7 +280,6 @@ const handleSave = async () => {
   );
 
   const renderUsuariosCards = () => {
-    // Se usa "Array.isArray" y fallback "|| []" para que la app nunca se caiga
     const safeUsers = Array.isArray(users) ? users.map(u => ({ ...u, type: "Usuario" })) : [];
     const safeCaregivers = Array.isArray(caregivers) ? caregivers.map(c => ({ ...c, type: "Cuidador" })) : [];
     const safeDoctors = Array.isArray(doctors) ? doctors.map(d => ({ ...d, type: "Doctor" })) : [];
@@ -238,15 +307,25 @@ const handleSave = async () => {
             }}
           >
             <View style={styles.cardHeader}>
-              <Ionicons 
-                name={item.type === "Usuario" ? "person" : item.type === "Cuidador" ? "walk" : "medical"} 
-                size={24} 
-                color="#37889A" 
+              <Ionicons
+                name={item.type === "Usuario" ? "person" : item.type === "Cuidador" ? "walk" : "medical"}
+                size={24}
+                color="#37889A"
               />
               <Text style={styles.cardBadge}>{item.type}</Text>
             </View>
             <Text style={styles.cardName}>{item.firstName} {item.lastName}</Text>
             <Text style={styles.cardPhone}>{item.phone}</Text>
+            <View style={styles.cardActions}>
+              <TouchableOpacity onPress={() => handleEditProfile(item as any, item.type)} style={styles.actionButton}>
+                <Ionicons name="pencil-outline" size={20} color="#37889A" />
+                <Text style={styles.actionButtonText}>Editar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteProfile(item as any, item.type)} style={styles.actionButton}>
+                <Ionicons name="trash-outline" size={20} color="#FF5252" />
+                <Text style={styles.actionButtonText}>Eliminar</Text>
+              </TouchableOpacity>
+            </View>
           </TouchableOpacity>
         ))}
       </View>
@@ -256,9 +335,12 @@ const handleSave = async () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       <LinearGradient colors={["#1A778E", "#145269"]} style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}><Ionicons name="chevron-back" size={28} color="#145269" /></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={28} color="#145269" />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Perfiles de Usuario</Text>
       </LinearGradient>
+      
       <View style={styles.tabs}>
         {(["Usuario", "Cuidador", "Doctor", "Usuarios"] as UserType[]).map((tab) => (
           <TouchableOpacity key={tab} style={[styles.tab, activeTab === tab && styles.activeTab]} onPress={() => setActiveTab(tab)}>
@@ -266,6 +348,7 @@ const handleSave = async () => {
           </TouchableOpacity>
         ))}
       </View>
+      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {activeTab === "Usuario" && renderUserForm()}
         {activeTab === "Cuidador" && renderCaregiverForm()}
@@ -284,6 +367,7 @@ const handleSave = async () => {
           <View style={styles.modalContent}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={styles.detailTitle}>Información del Perfil</Text>
+              
               {selectedProfile && (
                 <View style={styles.detailSection}>
                   <Text style={styles.detailLabel}>Nombre Completo</Text>
@@ -292,21 +376,22 @@ const handleSave = async () => {
                   <Text style={styles.detailLabel}>Teléfono</Text>
                   <Text style={styles.detailValue}>{selectedProfile.phone}</Text>
 
-                  {"idCard" in selectedProfile && selectedProfile.idCard && (
+                  {/* 💡 CORRECCIÓN LÓGICA CON !! PARA EVITAR STRINGS VACÍOS */}
+                  {"idCard" in selectedProfile && !!selectedProfile.idCard && (
                     <>
                       <Text style={styles.detailLabel}>Cédula</Text>
                       <Text style={styles.detailValue}>{selectedProfile.idCard}</Text>
                     </>
                   )}
 
-                  {"clinic" in selectedProfile && (
+                  {"clinic" in selectedProfile && !!selectedProfile.clinic && (
                     <>
                       <Text style={styles.detailLabel}>Clínica</Text>
                       <Text style={styles.detailValue}>{selectedProfile.clinic}</Text>
                     </>
                   )}
 
-                  {"medicalHistory" in selectedProfile && selectedProfile.medicalHistory && (
+                  {"medicalHistory" in selectedProfile && !!selectedProfile.medicalHistory && (
                     <>
                       <Text style={styles.detailLabel}>Historial Médico</Text>
                       <Text style={styles.detailValue}>{selectedProfile.medicalHistory}</Text>
@@ -314,6 +399,7 @@ const handleSave = async () => {
                   )}
                 </View>
               )}
+              
               <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
                 <Text style={styles.closeButtonText}>Cerrar Detalle</Text>
               </TouchableOpacity>
@@ -328,7 +414,7 @@ const handleSave = async () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa" },
   header: { paddingTop: 50, paddingBottom: 20, paddingHorizontal: 20, flexDirection: "row", alignItems: "center" },
-   backButton: {
+  backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -366,6 +452,27 @@ const styles = StyleSheet.create({
   profileCard: { backgroundColor: "white", borderRadius: 16, padding: 15, elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
   cardBadge: { backgroundColor: "#E3E7E8", color: "#1A778E", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, fontSize: 12, fontWeight: "bold" },
+  cardActions: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 10,
+    gap: 15,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+  },
+  actionButtonText: {
+    marginLeft: 5,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
   cardName: { fontSize: 18, fontWeight: "bold", color: "#333" },
   cardPhone: { fontSize: 14, color: "#666", marginTop: 5 },
   emptyState: { alignItems: "center", paddingVertical: 50 },
