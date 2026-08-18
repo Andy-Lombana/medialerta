@@ -20,7 +20,7 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
 export default function AddAppointmentScreen() {
   const router = useRouter();
-  const [title, setTitle] = useState("Recordatorio Cita");
+  const [title, setTitle] = useState("");
   const [info, setInfo] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -106,9 +106,9 @@ export default function AddAppointmentScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <LinearGradient colors={["#FF7043", "#D84315"]} style={styles.header}>
+      <LinearGradient colors={["#1A778E", "#145269"]} style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={28} color="#D84315" />
+          <Ionicons name="chevron-back" size={28} color="#1A778E" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Agendar Cita</Text>
       </LinearGradient>
@@ -134,12 +134,12 @@ export default function AddAppointmentScreen() {
 
           <View style={styles.row}>
             <TouchableOpacity style={styles.dateTimeBtn} onPress={() => setShowDatePicker(true)}>
-              <Ionicons name="calendar-outline" size={20} color="#D84315" />
+              <Ionicons name="calendar-outline" size={20} color="#1A778E" />
               <Text style={styles.dateTimeText}>{date.toLocaleDateString()}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.dateTimeBtn} onPress={() => setShowTimePicker(true)}>
-              <Ionicons name="time-outline" size={20} color="#D84315" />
+              <Ionicons name="time-outline" size={20} color="#1A778E" />
               <Text style={styles.dateTimeText}>
                 {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               </Text>
@@ -187,6 +187,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", gap: 10, marginTop: 20 },
   dateTimeBtn: { flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "#f5f5f5", padding: 15, borderRadius: 12, gap: 10, borderWidth: 1, borderColor: "#eee" },
   dateTimeText: { fontSize: 14, color: "#333", fontWeight: "500" },
-  saveButton: { backgroundColor: "#D84315", padding: 18, borderRadius: 15, alignItems: "center", marginTop: 30 },
+  saveButton: { backgroundColor: "#1A778E", padding: 18, borderRadius: 15, alignItems: "center", marginTop: 30 },
   saveButtonText: { color: "white", fontSize: 18, fontWeight: "bold" },
 });
